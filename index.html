@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบประเมินการแพ้ยาและออกบัตรแพ้ยา</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="container input-mode">
+        <header class="header no-print">
+            <h1>💊 ระบบประเมินการแพ้ยา & ออกบัตรแพ้ยา</h1>
+            <p>Parallel Timeline | Multi-Algorithm | Thai Language</p>
+        </header>
+
+        <div class="print-header-report">
+            <h2>แบบบันทึกการประเมินการแพ้ยา (Drug Allergy Assessment Report)</h2>
+            <hr>
+        </div>
+
+        <form id="assessmentForm">
+            
+            <section class="card">
+                <h3>1. ข้อมูลผู้ป่วย (Patient Information)</h3>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>ชื่อ-นามสกุล:</label>
+                        <input type="text" id="patientName" placeholder="ระบุชื่อผู้ป่วย" oninput="updateCard()">
+                    </div>
+                    <div class="form-group">
+                        <label>HN:</label>
+                        <input type="text" id="patientHN" placeholder="ระบุ HN">
+                    </div>
+                    <div class="form-group">
+                        <label>อายุ (ปี):</label>
+                        <input type="number" style="width:100px;">
+                    </div>
+                    <div class="form-group">
+                        <label>หอผู้ป่วย/แผนก:</label>
+                        <input type="text">
+                    </div>
+                </div>
+            </section>
+
+            <section class="card">
+                <h3>2. ไทม์ไลน์การใช้ยาและอาการ (Timeline)</h3>
+                <p class="hint no-print">ระบุวัน-เวลา และเลือกว่าเป็น "ยา" หรือ "อาการ" เพื่อสร้างกราฟเปรียบเทียบ</p>
+
+                <div class="timeline-input-box no-print">
+                    <div class="input-group">
+                        <label>วันที่</label>
+                        <input type="date" id="tDate">
+                    </div>
+                    <div class="input-group">
+                        <label>เวลา</label>
+                        <input type="time" id="tTime">
+                    </div>
+                    <div class="input-group">
+                        <label>ประเภท</label>
+                        <select id="tType">
+                            <option value="drug">💊 ยา (Drug)</option>
+                            <option value="symptom">⚠️ อาการ (Symptom)</option>
+                        </select>
+                    </div>
+                    <div class="input-group" style="flex:2;">
+                        <label>รายละเอียด (ชื่อยา/อาการ)</label>
+                        <input type="text" id="tDesc" placeholder="เช่น Amoxicillin หรือ ผื่นแดง" oninput="updateCard()">
+                    </div>
+                    <button type="button" class="btn-add" onclick="addTimelineItem()">+ เพิ่ม</button>
+                </div>
+
+                <div class="no-print" style="margin-bottom:15px;">
+                     <button type="button" class="btn-info" onclick="checkDrugInfo()">🔍 เช็ค FDA (พิมพ์ชื่อยาภาษาอังกฤษ)</button>
+                     <div id="apiResultBox" style="display:none; margin-top:10px; padding:10px; background:#fff3e0; border:1px solid orange;"></div>
+                </div>
+
+                <div class="timeline-visual-container" id="visualTimeline">
+                    <div class="timeline-line"></div>
+                    <div class="timeline-empty-state">ยังไม่มีข้อมูล</div>
+                </div>
+            </section>
+
+            <section class="card">
+                <h3>3. การประเมินความสัมพันธ์ (Causality Assessment)</h3>
+                
+                <div class="tabs no-print">
+                    <button type="button" class="tab-btn active" onclick="openTab('naranjo')">Naranjo (ไทย)</button>
+                    <button type="button" class="tab-btn" onclick="openTab('liverpool')">Liverpool (ไทย)</button>
+                    <button type="button" class="tab-btn" onclick="openTab('thai')">เกณฑ์ อย. (Thai FDA)</button>
+                    <button type="button" class="tab-btn" onclick="openTab('scorten')">SCORTEN</button>
+                </div>
+
+                <div id="naranjo" class="algo-content" style="display:block;">
+                    <h4>3.1 Naranjo Algorithm</h4>
+                    <table class="assessment-table">
+                        <thead>
+                            <tr>
+                                <th>คำถาม (Question)</th>
+                                <th width="50">ใช่</th>
+                                <th width="50">ไม่ใช่</th>
+                                <th width="50">ไม่ทราบ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="naranjoList"></tbody>
+                    </table>
+                    <div class="result-box">
+                        คะแนนรวม: <strong id="naranjoScore">0</strong> &mdash; 
+                        ผลการประเมิน: <strong id="naranjoResult">Doubtful (สงสัย)</strong>
+                    </div>
+                </div>
+
+                <div id="liverpool" class="algo-content" style="display:none;">
+                    <h4>3.2 Liverpool Causality Assessment Tool (LCAT)</h4>
+                    <table class="assessment-table">
+                        <tbody id="liverpoolList"></tbody>
+                    </table>
+                    <div class="result-box">
+                        ผลการประเมิน: <strong id="liverpoolResult">Unlikely (ไม่น่าใช่)</strong>
+                    </div>
+                </div>
+
+                <div id="thai" class="algo-content" style="display:none;">
+                    <h4>3.3 เกณฑ์ประเมินความสัมพันธ์ (HPVC/Thai FDA)</h4>
+                    <div class="thai-criteria">
+                        <label><input type="checkbox" id="thai1" onchange="calcThai()"> 1. มีความสัมพันธ์ของเวลาระหว่างยาและอาการ (Temporal relationship)</label><br>
+                        <label><input type="checkbox" id="thai2" onchange="calcThai()"> 2. อาการหายไปเมื่อหยุดยา (Dechallenge Positive)</label><br>
+                        <label><input type="checkbox" id="thai3" onchange="calcThai()"> 3. อาการเกิดซ้ำเมื่อได้รับยาใหม่ (Rechallenge Positive)</label><br>
+                        <label><input type="checkbox" id="thai4" onchange="calcThai()"> 4. ไม่น่าเกิดจากสาเหตุอื่น/โรคที่เป็นอยู่ (Unlikely to be other causes)</label><br>
+                        <label><input type="checkbox" id="thai5" onchange="calcThai()"> 5. อาการเข้าได้กับเภสัชวิทยาของยา (Pharmacologically plausible)</label>
+                    </div>
+                    <div class="result-box">
+                        ผลการประเมิน: <strong id="thaiResult">Unlikely (ไม่น่าใช่)</strong>
+                    </div>
+                </div>
+
+                <div id="scorten" class="algo-content" style="display:none;">
+                    <h4>3.4 SCORTEN (สำหรับประเมินความรุนแรง SJS/TEN)</h4>
+                    <table class="assessment-table">
+                        <thead><tr><th>ปัจจัยเสี่ยง (Risk Factor)</th><th width="50">เป็นจริง</th></tr></thead>
+                        <tbody>
+                            <tr><td>อายุ > 40 ปี</td><td class="center"><input type="checkbox" class="sc-chk" onchange="calcScorten()"></td></tr>
+                            <tr><td>มีโรคมะเร็งร่วมด้วย</td><td class="center"><input type="checkbox" class="sc-chk" onchange="calcScorten()"></td></tr>
+                            <tr><td>อัตราการเต้นหัวใจ > 120 ครั้ง/นาที</td><td class="center"><input type="checkbox" class="sc-chk" onchange="calcScorten()"></td></tr>
+                            <tr><td>พื้นที่ผิวหลุดลอก > 10% (วันที่ 1)</td><td class="center"><input type="checkbox" class="sc-chk" onchange="calcScorten()"></td></tr>
+                            <tr><td>Serum BUN > 28 mg/dL</td><td class="center"><input type="checkbox" class="sc-chk" onchange="calcScorten()"></td></tr>
+                            <tr><td>Serum Glucose > 252 mg/dL</td><td class="center"><input type="checkbox" class="sc-chk" onchange="calcScorten()"></td></tr>
+                            <tr><td>Serum Bicarbonate < 20 mEq/L</td><td class="center"><input type="checkbox" class="sc-chk" onchange="calcScorten()"></td></tr>
+                        </tbody>
+                    </table>
+                    <div class="result-box">
+                        คะแนน: <strong id="scScore">0</strong> &mdash; 
+                        ความเสี่ยงเสียชีวิต: <strong id="scMortality">3.2%</strong>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card">
+                <h3>4. รายละเอียดอาการและรูปภาพ</h3>
+                <textarea id="symptomDesc" rows="3" placeholder="ระบุลักษณะผื่น อาการบวม หรืออาการทางระบบหายใจ..." oninput="updateCard()"></textarea>
+                <div class="form-group no-print" style="margin-top:10px;">
+                    <label>📸 อัพโหลดรูปภาพ:</label>
+                    <input type="file" accept="image/*" onchange="previewImage(event)">
+                </div>
+                <div id="photoPreviewContainer" style="display:none; margin-top:10px;">
+                    <img id="photoPreview" src="" style="max-width:100%; border:1px solid #ccc;">
+                </div>
+            </section>
+
+            <section class="card no-print">
+                <h3>ผู้ประเมิน (Evaluator)</h3>
+                <div class="grid-2">
+                    <input type="text" id="pharmaName" placeholder="ชื่อ-นามสกุล เภสัชกร" oninput="updateSign(); updateCard();">
+                    <input type="text" id="pharmaPlace" placeholder="โรงพยาบาล / ร้านยา / แผนก" oninput="updateSign(); updateCard();">
+                </div>
+            </section>
+
+            <section class="card no-print" style="background-color: #ffebee; border: 1px solid #ffcdd2;">
+                <h3 style="color: #c62828;">🪪 ตัวอย่างบัตรแพ้ยา (Allergy Card Preview)</h3>
+                <p class="hint">ข้อมูลจะถูกดึงมาแสดงอัตโนมัติ กดปุ่ม "พิมพ์บัตรแพ้ยา" เพื่อพิมพ์เฉพาะส่วนนี้</p>
+                
+                <div class="card-preview-wrapper">
+                    <div id="allergyCard" class="allergy-card">
+                        <div class="ac-header">
+                            ⚠ บัตรประจำตัวผู้แพ้ยา (Drug Allergy Card)
+                        </div>
+                        <div class="ac-body">
+                            <div class="ac-row">
+                                <span class="ac-label">ชื่อผู้ป่วย:</span>
+                                <span class="ac-value" id="cardPatientName">-</span>
+                            </div>
+                            <div class="ac-row">
+                                <span class="ac-label">ชื่อยาที่แพ้:</span>
+                                <span class="ac-value drug-name" id="cardDrugName">-</span>
+                            </div>
+                            <div class="ac-row">
+                                <span class="ac-label">อาการแพ้:</span>
+                                <span class="ac-value" id="cardReaction">-</span>
+                            </div>
+                            <div class="ac-row">
+                                <span class="ac-label">ผลประเมิน (Naranjo):</span>
+                                <span class="ac-value" id="cardNaranjo">-</span>
+                            </div>
+                        </div>
+                        <div class="ac-footer">
+                            <div class="ac-evaluator">
+                                ผู้ประเมิน: <span id="cardEvaluator">-</span><br>
+                                <span id="cardPlace" style="font-size: 0.8em;">-</span>
+                            </div>
+                            <div class="ac-date">วันที่: <span id="cardDate"></span></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="actions no-print">
+                <button type="button" class="btn-print" onclick="printReport()">🖨️ พิมพ์รายงาน (A4 Report)</button>
+                <button type="button" class="btn-print-card" onclick="printCardOnly()">🖨️ พิมพ์บัตรแพ้ยา (Card Only)</button>
+            </div>
+
+            <div class="print-footer">
+                <div class="sign-box">
+                    <p>ลงชื่อ .......................................................</p>
+                    <p>( <span id="printName">........................................</span> )</p>
+                    <p>เภสัชกรผู้ประเมิน</p>
+                    <p>หน่วยงาน: <span id="printPlace">......................</span></p>
+                    <p>วันที่: <span id="printDate"></span></p>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
