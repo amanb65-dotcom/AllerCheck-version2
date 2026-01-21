@@ -1,9 +1,9 @@
 /* Base Styles */
-body { font-family: 'Sarabun', sans-serif; background: #f4f6f8; margin: 0; padding: 20px; color: #333; }
+body { font-family: 'Sarabun', sans-serif; background: #f4f6f8; margin: 0; padding: 20px; color: #333; font-size: 16px; }
 .container { max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
 
-h1, h2, h3, h4 { margin-top: 0; color: #2c3e50; }
-h3 { border-bottom: 2px solid #e1e4e8; padding-bottom: 8px; font-size: 1.2rem; color: #0056b3; }
+h1, h2, h3, h4 { margin: 0 0 10px 0; color: #2c3e50; }
+h3 { border-bottom: 2px solid #e1e4e8; padding-bottom: 5px; font-size: 1.1rem; color: #0056b3; }
 .card { background: #fff; padding: 20px; border: 1px solid #e1e4e8; border-radius: 6px; margin-bottom: 20px; }
 
 /* Grid & Inputs */
@@ -12,115 +12,158 @@ h3 { border-bottom: 2px solid #e1e4e8; padding-bottom: 8px; font-size: 1.2rem; c
 label { display: block; font-weight: 600; font-size: 0.9rem; margin-bottom: 4px; }
 input, select, textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-family: 'Sarabun'; box-sizing: border-box; }
 
-/* Timeline */
-.timeline-input-box { background: #e3f2fd; padding: 15px; border-radius: 6px; display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; align-items: flex-end; }
-.input-group { flex: 1; min-width: 120px; }
+/* Suggestions List (Dropdown for OpenFDA) */
+.suggestions-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 0 0 4px 4px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: none; /* Hidden by default */
+}
+.suggestions-list li {
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    border-bottom: 1px solid #eee;
+}
+.suggestions-list li:hover {
+    background-color: #e3f2fd;
+}
 
-.timeline-visual-container { position: relative; padding: 20px 0; min-height: 100px; }
+/* Timeline Inputs */
+.timeline-input-box { background: #e3f2fd; padding: 15px; border-radius: 6px; display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; align-items: flex-end; }
+.input-group { flex: 1; min-width: 100px; }
+.input-group-pair { flex: 1.5; min-width: 180px; }
+
+/* Visual Timeline (Screen) */
+.timeline-visual-container { position: relative; padding: 10px 0; min-height: 80px; }
 .timeline-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: #ccc; transform: translateX(-50%); }
 
-.timeline-item { position: relative; width: 45%; padding: 10px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 15px; font-size: 0.9rem; }
+.timeline-item { position: relative; width: 45%; padding: 8px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 10px; font-size: 0.9rem; }
 .timeline-item.drug { left: 0; border-left: 4px solid #28a745; text-align: right; margin-right: auto; }
-.timeline-item.drug::after { content: ''; position: absolute; right: -11.5%; top: 15px; width: 10px; height: 10px; background: #28a745; border-radius: 50%; }
 .timeline-item.symptom { left: 55%; border-left: 4px solid #dc3545; text-align: left; }
-.timeline-item.symptom::after { content: ''; position: absolute; left: -11.5%; top: 15px; width: 10px; height: 10px; background: #dc3545; border-radius: 50%; }
+.timeline-item::after { content: ''; position: absolute; top: 12px; width: 8px; height: 8px; border-radius: 50%; background: #999; }
+.timeline-item.drug::after { right: -11.5%; background: #28a745; }
+.timeline-item.symptom::after { left: -11.5%; background: #dc3545; }
 
-.time-badge { font-weight: bold; font-size: 0.85rem; color: #555; display: block; }
-.btn-del-time { float: right; background: none; border: none; color: red; cursor: pointer; }
+.time-badge { font-weight: bold; display: block; font-size: 0.85rem; color: #555; margin-bottom: 2px;}
+.btn-del-time { float: right; border:none; background:none; color:red; cursor:pointer;}
 .timeline-item.drug .btn-del-time { float: left; }
 
-/* Algorithm Tables */
-.tabs { margin-bottom: 15px; border-bottom: 1px solid #ccc; }
-.tab-btn { background: none; border: none; padding: 10px 20px; cursor: pointer; font-size: 1rem; color: #555; border-bottom: 3px solid transparent; }
-.tab-btn.active { color: #0056b3; border-bottom: 3px solid #0056b3; font-weight: bold; }
-.algo-content { display: none; }
-.assessment-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
-.assessment-table th, .assessment-table td { border: 1px solid #ddd; padding: 8px; }
+/* Tables */
+.assessment-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 0.9rem; }
+.assessment-table th, .assessment-table td { border: 1px solid #ddd; padding: 6px; }
 .assessment-table th { background: #f8f9fa; }
 .assessment-table td.center { text-align: center; }
-.result-box { background: #f1f8ff; padding: 15px; border: 1px solid #d1e7dd; border-radius: 4px; text-align: center; font-size: 1.1rem; }
+.result-box { background: #f1f8ff; padding: 10px; border: 1px solid #d1e7dd; border-radius: 4px; text-align: center; font-weight: bold; }
 
-/* --- ALLERGY CARD DESIGN --- */
-.card-preview-wrapper { display: flex; justify-content: center; padding: 20px; }
-.allergy-card {
-    width: 8.5cm; /* Standard wallet card width */
-    height: 5.5cm; /* Standard wallet card height */
-    border: 2px solid #d32f2f;
-    border-radius: 8px;
-    background: white;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    font-family: 'Sarabun', sans-serif;
-    position: relative;
-}
+/* Tabs */
+.tabs { margin-bottom: 10px; border-bottom: 1px solid #ccc; }
+.tab-btn { background: none; border: none; padding: 8px 15px; cursor: pointer; font-size: 1rem; border-bottom: 3px solid transparent; }
+.tab-btn.active { border-bottom: 3px solid #0056b3; color: #0056b3; font-weight: bold; }
+.algo-content { display: none; }
 
-.ac-header {
-    background: #d32f2f;
-    color: white;
-    text-align: center;
-    font-weight: bold;
-    font-size: 14px;
-    padding: 5px;
-    text-transform: uppercase;
-}
-
-.ac-body { padding: 8px 12px; flex: 1; }
-.ac-row { margin-bottom: 4px; font-size: 12px; line-height: 1.3; }
-.ac-label { font-weight: bold; color: #555; }
-.ac-value { color: #000; }
-.ac-value.drug-name { display: block; font-size: 16px; font-weight: bold; color: #d32f2f; margin-top: 2px; border-bottom: 1px dashed #ccc; }
-
-.ac-footer {
-    background: #fce4ec;
-    padding: 5px 12px;
-    font-size: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-}
+/* Card Preview */
+.card-preview-wrapper { display: flex; justify-content: center; padding: 10px; }
+.allergy-card { width: 8.5cm; height: 5.5cm; border: 2px solid #d32f2f; background: white; display: flex; flex-direction: column; font-size: 12px; }
+.ac-header { background: #d32f2f; color: white; text-align: center; padding: 4px; font-weight: bold; }
+.ac-body { padding: 8px; flex: 1; }
+.ac-row { margin-bottom: 3px; border-bottom: 1px dotted #eee; }
+.ac-label { font-weight: bold; }
+.ac-value.drug-name { color: #d32f2f; font-weight: bold; font-size: 14px; }
+.ac-footer { background: #ffebee; padding: 5px; font-size: 10px; display: flex; justify-content: space-between; }
 
 /* Buttons */
-.btn-add { background: #28a745; color: white; border: none; padding: 0 15px; height: 38px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-.btn-info { background: #17a2b8; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
-.btn-print { background: #0056b3; color: white; padding: 12px 25px; border: none; border-radius: 4px; cursor: pointer; }
-.btn-print-card { background: #d32f2f; color: white; padding: 12px 25px; border: none; border-radius: 4px; cursor: pointer; margin-left: 10px; }
+.btn-add, .btn-print, .btn-print-card { padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; color: white; }
+.btn-add { background: #28a745; }
+.btn-print { background: #0056b3; padding: 12px 25px; font-size: 1rem; }
+.btn-print-card { background: #c62828; padding: 12px 25px; font-size: 1rem; margin-left: 10px; }
 
-/* Print Logic */
-.print-header-report, .print-footer { display: none; }
+/* PRINT MODE : HIDDEN BY DEFAULT */
+.print-header-formal, .print-footer-formal { display: none; }
 
+/* =========================================
+   PRINTING STYLES (A4 FORMAL & COMPACT)
+   ========================================= */
 @media print {
-    body { background: white; padding: 0; }
-    .no-print { display: none !important; }
-    .container { box-shadow: none; max-width: 100%; padding: 0; }
-
-    /* Case A: Print Report */
-    body:not(.printing-card) .print-header-report { display: block; text-align: center; margin-bottom: 20px; }
-    body:not(.printing-card) .print-footer { display: block; margin-top: 50px; }
-    body:not(.printing-card) .algo-content { display: block !important; margin-bottom: 20px; page-break-inside: avoid; border-bottom: 1px dashed #ccc; }
-    body:not(.printing-card) .tabs { display: none; }
-    body:not(.printing-card) input, body:not(.printing-card) textarea { border: none; padding: 0; resize: none; }
-    body:not(.printing-card) .card { border: none; padding: 0; margin-bottom: 20px; }
+    @page { size: A4; margin: 1cm; }
+    body { background: white; padding: 0; font-size: 11pt; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .container { box-shadow: none; max-width: 100%; padding: 0; border: none; }
     
-    /* Timeline Print Fixes */
-    body:not(.printing-card) .timeline-item { border: 1px solid #000 !important; }
-    body:not(.printing-card) .timeline-item.drug { border-left: 4px solid #000 !important; }
-    body:not(.printing-card) .timeline-item.symptom { border-left: 4px solid #000 !important; }
-    body:not(.printing-card) .timeline-line { background: #000; }
+    /* HIDE Interactive */
+    .no-print, .tabs, .btn-del-time, .no-print-data, .btn-add, .hint { display: none !important; }
 
-    /* Case B: Print Card Only */
+    /* Layout Compact */
+    h3 { font-size: 12pt; margin: 5px 0; border-bottom: 1px solid #000; color: #000; }
+    h4 { font-size: 10pt; margin: 3px 0; color: #000; font-weight: bold; }
+    .form-group { margin-bottom: 5px; }
+    .card { margin-bottom: 8px; padding: 0; border: none; }
+
+    /* HEADER */
+    .print-header-formal { display: block; margin-bottom: 8px; border-bottom: 2px solid #000; padding-bottom: 5px; }
+    .logo-area { display: flex; align-items: center; margin-bottom: 5px; }
+    .logo-box { width: 35px; height: 35px; border: 1px solid #000; display: flex; align-items: center; justify-content: center; margin-right: 15px; }
+    .hospital-name h3 { border: none; margin: 0; font-size: 14pt; }
+    .patient-info-box { border: 1px solid #000; padding: 4px; font-size: 10pt; }
+    .info-row { display: flex; justify-content: space-between; margin-bottom: 0px; }
+
+    /* TIMELINE */
+    .section-timeline { border: 1px solid #000; padding: 5px; margin-bottom: 8px; }
+    .timeline-visual-container { border: none; margin: 0; padding: 0; }
+    .timeline-line, .timeline-empty-state { display: none; }
+
+    .timeline-item {
+        width: 100% !important; left: auto !important; right: auto !important; margin: 0 !important;
+        background: transparent !important; border: none !important; 
+        border-bottom: 1px solid #ccc !important;
+        padding: 3px 0 !important;
+        text-align: left !important;
+        display: flex; align-items: flex-start;
+        font-size: 9pt; /* Smaller font for list */
+    }
+    .timeline-item::after, .timeline-item::before { display: none; }
+    .time-badge { flex: 0 0 130px; color: #000; font-weight: bold; margin-right: 10px; }
+    .timeline-desc { flex: 1; color: #000; }
+    .timeline-item.drug .timeline-desc::before { content: "[ยา] "; font-weight: bold; }
+    .timeline-item.symptom .timeline-desc::before { content: "[อาการ] "; font-weight: bold; }
+
+    /* --- COMPACT TABLES FOR PRINT --- */
+    .section-algo { page-break-inside: avoid; }
+    .algo-content { display: block !important; margin-bottom: 5px; border-bottom: 1px dashed #ccc; padding-bottom: 2px; }
+    
+    /* Decrease Table Size */
+    .compact-table { font-size: 8pt; width: 100%; } /* Small font */
+    .compact-table th, .compact-table td { padding: 1px 3px; border: 1px solid #666; } /* Tighter padding */
+    .result-box { border: 1px solid #000; background: none; text-align: left; padding: 2px; margin-top: 2px; font-size: 9pt; }
+
+    /* Thai List Compact */
+    .thai-criteria-print div { margin-bottom: 0px !important; font-size: 9pt; }
+
+    /* Diagnosis Section */
+    .section-clinical label { font-size: 10pt; display: inline-block; margin-right: 5px; }
+    .section-clinical select, .section-clinical textarea { 
+        border: none; background: transparent; 
+        font-family: 'Sarabun'; font-size: 10pt; 
+        resize: none; width: auto; display: inline-block;
+    }
+    .section-clinical select { appearance: none; -webkit-appearance: none; font-weight: bold; }
+
+    /* FOOTER */
+    .print-footer-formal { display: block; margin-top: 10px; page-break-inside: avoid; }
+    .signature-block { float: right; width: 250px; text-align: center; font-size: 10pt; }
+
+    /* Card Override */
     body.printing-card * { visibility: hidden; }
-    body.printing-card .allergy-card, body.printing-card .allergy-card * {
-        visibility: visible;
-    }
-    body.printing-card .allergy-card {
-        position: absolute;
-        left: 50%;
-        top: 20%;
-        transform: translateX(-50%) scale(1.2); /* Scale up slightly for clarity */
-        box-shadow: none;
-        border: 2px solid black; /* Better for B&W printers */
-    }
-    body.printing-card .ac-header { background: #000 !important; color: white !important; -webkit-print-color-adjust: exact; }
+    body.printing-card .allergy-card, body.printing-card .allergy-card * { visibility: visible; }
+    body.printing-card .allergy-card { position: absolute; left: 50%; top: 20%; transform: translateX(-50%); border: 2px solid black; }
 }
