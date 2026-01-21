@@ -3,229 +3,250 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบประเมินการแพ้ยาและออกบัตรแพ้ยา</title>
+    <title>แบบประเมินการแพ้ยา (Hospital Form)</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <div class="container input-mode">
+    <div class="container">
+        
         <header class="header no-print">
-            <h1>💊 ระบบประเมินการแพ้ยา & ออกบัตรแพ้ยา</h1>
-            <p>Parallel Timeline | Multi-Algorithm | Thai Language</p>
+            <h1>💊 ระบบประเมินการแพ้ยา (Drug Allergy Assessment)</h1>
+            <p>Smart Search (FDA) + Diagnosis Type + Compact Print</p>
         </header>
 
-        <div class="print-header-report">
-            <h2>แบบบันทึกการประเมินการแพ้ยา (Drug Allergy Assessment Report)</h2>
-            <hr>
+        <div class="print-header-formal">
+            <div class="logo-area">
+                <div class="logo-box">🏥 LOGO</div>
+                <div class="hospital-name">
+                    <h3>โรงพยาบาล............................................</h3>
+                    <p>แบบบันทึกการประเมินการแพ้ยา (Drug Allergy Causality Assessment)</p>
+                </div>
+            </div>
+            <div class="patient-info-box">
+                <div class="info-row">
+                    <span><strong>ชื่อ-สกุล:</strong> <span id="pNameDisplay"></span></span>
+                    <span><strong>HN:</strong> <span id="pHNDisplay"></span></span>
+                    <span><strong>อายุ:</strong> <span id="pAgeDisplay"></span> ปี</span>
+                </div>
+                <div class="info-row">
+                    <span><strong>หอผู้ป่วย:</strong> <span id="pWardDisplay"></span></span>
+                    <span><strong>วันที่ประเมิน:</strong> <span id="pDateDisplay"></span></span>
+                </div>
+            </div>
         </div>
 
-        <form id="assessmentForm">
+        <form id="assessmentForm" autocomplete="off">
             
-            <section class="card">
+            <section class="card section-patient no-print-data">
                 <h3>1. ข้อมูลผู้ป่วย (Patient Information)</h3>
                 <div class="grid-2">
                     <div class="form-group">
                         <label>ชื่อ-นามสกุล:</label>
-                        <input type="text" id="patientName" placeholder="ระบุชื่อผู้ป่วย" oninput="updateCard()">
+                        <input type="text" id="patientName" oninput="syncData()">
                     </div>
                     <div class="form-group">
                         <label>HN:</label>
-                        <input type="text" id="patientHN" placeholder="ระบุ HN">
+                        <input type="text" id="patientHN" oninput="syncData()">
                     </div>
                     <div class="form-group">
                         <label>อายุ (ปี):</label>
-                        <input type="number" style="width:100px;">
+                        <input type="number" id="patientAge" oninput="syncData()">
                     </div>
                     <div class="form-group">
-                        <label>หอผู้ป่วย/แผนก:</label>
-                        <input type="text">
+                        <label>หอผู้ป่วย:</label>
+                        <input type="text" id="patientWard" oninput="syncData()">
                     </div>
                 </div>
             </section>
 
-            <section class="card">
+            <section class="card section-timeline">
                 <h3>2. ไทม์ไลน์การใช้ยาและอาการ (Timeline)</h3>
-                <p class="hint no-print">ระบุวัน-เวลา และเลือกว่าเป็น "ยา" หรือ "อาการ" เพื่อสร้างกราฟเปรียบเทียบ</p>
-
+                <p class="hint no-print" style="font-size:0.85rem; color:#666; margin-bottom:10px;">* หากเลือก "ยา" สามารถพิมพ์ชื่อยาเพื่อค้นหาอัตโนมัติ (OpenFDA)</p>
+                
                 <div class="timeline-input-box no-print">
-                    <div class="input-group">
-                        <label>วันที่</label>
-                        <input type="date" id="tDate">
+                    <div class="input-group-pair">
+                        <label>เริ่ม (Start)</label>
+                        <div style="display:flex; gap:5px;">
+                            <input type="date" id="tStartDate">
+                            <input type="time" id="tStartTime">
+                        </div>
                     </div>
-                    <div class="input-group">
-                        <label>เวลา</label>
-                        <input type="time" id="tTime">
+                    <div class="input-group-pair">
+                        <label>หยุด (Stop)</label>
+                        <div style="display:flex; gap:5px;">
+                            <input type="date" id="tStopDate">
+                            <input type="time" id="tStopTime">
+                        </div>
                     </div>
-                    <div class="input-group">
+                    
+                    <div class="input-group" style="flex:0 0 120px;">
                         <label>ประเภท</label>
-                        <select id="tType">
+                        <select id="tType" onchange="togglePlaceholder()">
                             <option value="drug">💊 ยา (Drug)</option>
                             <option value="symptom">⚠️ อาการ (Symptom)</option>
                         </select>
                     </div>
-                    <div class="input-group" style="flex:2;">
-                        <label>รายละเอียด (ชื่อยา/อาการ)</label>
-                        <input type="text" id="tDesc" placeholder="เช่น Amoxicillin หรือ ผื่นแดง" oninput="updateCard()">
+                    
+                    <div class="input-group" style="flex:2; position:relative;">
+                        <label>รายละเอียด (Search FDA)</label>
+                        <input type="text" id="tDesc" placeholder="พิมพ์ชื่อยา (ภาษาอังกฤษ)..." oninput="handleInputSearch()">
+                        <ul id="drugSuggestions" class="suggestions-list"></ul>
                     </div>
+
                     <button type="button" class="btn-add" onclick="addTimelineItem()">+ เพิ่ม</button>
                 </div>
 
-                <div class="no-print" style="margin-bottom:15px;">
-                     <button type="button" class="btn-info" onclick="checkDrugInfo()">🔍 เช็ค FDA (พิมพ์ชื่อยาภาษาอังกฤษ)</button>
-                     <div id="apiResultBox" style="display:none; margin-top:10px; padding:10px; background:#fff3e0; border:1px solid orange;"></div>
-                </div>
-
                 <div class="timeline-visual-container" id="visualTimeline">
-                    <div class="timeline-line"></div>
+                    <div class="timeline-line"></div> 
                     <div class="timeline-empty-state">ยังไม่มีข้อมูล</div>
                 </div>
             </section>
 
-            <section class="card">
+            <section class="card section-algo">
                 <h3>3. การประเมินความสัมพันธ์ (Causality Assessment)</h3>
                 
                 <div class="tabs no-print">
-                    <button type="button" class="tab-btn active" onclick="openTab('naranjo')">Naranjo (ไทย)</button>
-                    <button type="button" class="tab-btn" onclick="openTab('liverpool')">Liverpool (ไทย)</button>
-                    <button type="button" class="tab-btn" onclick="openTab('thai')">เกณฑ์ อย. (Thai FDA)</button>
+                    <button type="button" class="tab-btn active" onclick="openTab('naranjo')">Naranjo</button>
+                    <button type="button" class="tab-btn" onclick="openTab('liverpool')">Liverpool</button>
+                    <button type="button" class="tab-btn" onclick="openTab('thai')">Thai FDA</button>
                     <button type="button" class="tab-btn" onclick="openTab('scorten')">SCORTEN</button>
                 </div>
 
                 <div id="naranjo" class="algo-content" style="display:block;">
                     <h4>3.1 Naranjo Algorithm</h4>
-                    <table class="assessment-table">
+                    <table class="assessment-table compact-table">
                         <thead>
                             <tr>
                                 <th>คำถาม (Question)</th>
-                                <th width="50">ใช่</th>
-                                <th width="50">ไม่ใช่</th>
-                                <th width="50">ไม่ทราบ</th>
+                                <th width="35">ใช่</th><th width="35">ไม่ใช่</th><th width="35">?</th>
                             </tr>
                         </thead>
                         <tbody id="naranjoList"></tbody>
                     </table>
                     <div class="result-box">
-                        คะแนนรวม: <strong id="naranjoScore">0</strong> &mdash; 
-                        ผลการประเมิน: <strong id="naranjoResult">Doubtful (สงสัย)</strong>
+                        คะแนน: <strong id="naranjoScore">0</strong> &nbsp;|&nbsp; 
+                        ผล: <strong id="naranjoResult">Doubtful</strong>
                     </div>
                 </div>
 
                 <div id="liverpool" class="algo-content" style="display:none;">
-                    <h4>3.2 Liverpool Causality Assessment Tool (LCAT)</h4>
-                    <table class="assessment-table">
+                    <h4>3.2 Liverpool Algorithm</h4>
+                    <table class="assessment-table compact-table">
                         <tbody id="liverpoolList"></tbody>
                     </table>
-                    <div class="result-box">
-                        ผลการประเมิน: <strong id="liverpoolResult">Unlikely (ไม่น่าใช่)</strong>
-                    </div>
+                    <div class="result-box">ผล: <strong id="liverpoolResult">Unlikely</strong></div>
                 </div>
 
                 <div id="thai" class="algo-content" style="display:none;">
-                    <h4>3.3 เกณฑ์ประเมินความสัมพันธ์ (HPVC/Thai FDA)</h4>
-                    <div class="thai-criteria">
-                        <label><input type="checkbox" id="thai1" onchange="calcThai()"> 1. มีความสัมพันธ์ของเวลาระหว่างยาและอาการ (Temporal relationship)</label><br>
-                        <label><input type="checkbox" id="thai2" onchange="calcThai()"> 2. อาการหายไปเมื่อหยุดยา (Dechallenge Positive)</label><br>
-                        <label><input type="checkbox" id="thai3" onchange="calcThai()"> 3. อาการเกิดซ้ำเมื่อได้รับยาใหม่ (Rechallenge Positive)</label><br>
-                        <label><input type="checkbox" id="thai4" onchange="calcThai()"> 4. ไม่น่าเกิดจากสาเหตุอื่น/โรคที่เป็นอยู่ (Unlikely to be other causes)</label><br>
-                        <label><input type="checkbox" id="thai5" onchange="calcThai()"> 5. อาการเข้าได้กับเภสัชวิทยาของยา (Pharmacologically plausible)</label>
-                    </div>
-                    <div class="result-box">
-                        ผลการประเมิน: <strong id="thaiResult">Unlikely (ไม่น่าใช่)</strong>
-                    </div>
+                    <h4>3.3 Thai FDA Algorithm</h4>
+                    <div class="thai-criteria-print" id="thaiList"></div>
+                    <div class="result-box">ผล: <strong id="thaiResult">Unlikely</strong></div>
                 </div>
 
                 <div id="scorten" class="algo-content" style="display:none;">
-                    <h4>3.4 SCORTEN (สำหรับประเมินความรุนแรง SJS/TEN)</h4>
-                    <table class="assessment-table">
-                        <thead><tr><th>ปัจจัยเสี่ยง (Risk Factor)</th><th width="50">เป็นจริง</th></tr></thead>
-                        <tbody>
-                            <tr><td>อายุ > 40 ปี</td><td class="center"><input type="checkbox" class="sc-chk" onchange="calcScorten()"></td></tr>
-                            <tr><td>มีโรคมะเร็งร่วมด้วย</td><td class="center"><input type="checkbox" class="sc-chk" onchange="calcScorten()"></td></tr>
-                            <tr><td>อัตราการเต้นหัวใจ > 120 ครั้ง/นาที</td><td class="center"><input type="checkbox" class="sc-chk" onchange="calcScorten()"></td></tr>
-                            <tr><td>พื้นที่ผิวหลุดลอก > 10% (วันที่ 1)</td><td class="center"><input type="checkbox" class="sc-chk" onchange="calcScorten()"></td></tr>
-                            <tr><td>Serum BUN > 28 mg/dL</td><td class="center"><input type="checkbox" class="sc-chk" onchange="calcScorten()"></td></tr>
-                            <tr><td>Serum Glucose > 252 mg/dL</td><td class="center"><input type="checkbox" class="sc-chk" onchange="calcScorten()"></td></tr>
-                            <tr><td>Serum Bicarbonate < 20 mEq/L</td><td class="center"><input type="checkbox" class="sc-chk" onchange="calcScorten()"></td></tr>
+                    <h4>3.4 SCORTEN (SJS/TEN)</h4>
+                    <table class="assessment-table compact-table">
+                        <thead><tr><th>Risk Factor</th><th width="40">Yes</th></tr></thead>
+                        <tbody id="scortenBody">
+                            <tr><td>Age > 40</td><td class="center"><input type="checkbox" class="sc-chk" onchange="calcScorten()"></td></tr>
+                            <tr><td>Malignancy</td><td class="center"><input type="checkbox" class="sc-chk" onchange="calcScorten()"></td></tr>
+                            <tr><td>HR > 120</td><td class="center"><input type="checkbox" class="sc-chk" onchange="calcScorten()"></td></tr>
+                            <tr><td>BSA detached > 10%</td><td class="center"><input type="checkbox" class="sc-chk" onchange="calcScorten()"></td></tr>
+                            <tr><td>BUN > 28 mg/dL</td><td class="center"><input type="checkbox" class="sc-chk" onchange="calcScorten()"></td></tr>
+                            <tr><td>Glucose > 252 mg/dL</td><td class="center"><input type="checkbox" class="sc-chk" onchange="calcScorten()"></td></tr>
+                            <tr><td>HCO3 < 20 mEq/L</td><td class="center"><input type="checkbox" class="sc-chk" onchange="calcScorten()"></td></tr>
                         </tbody>
                     </table>
-                    <div class="result-box">
-                        คะแนน: <strong id="scScore">0</strong> &mdash; 
-                        ความเสี่ยงเสียชีวิต: <strong id="scMortality">3.2%</strong>
-                    </div>
+                    <div class="result-box">Score: <strong id="scScore">0</strong> | Mortality: <strong id="scMortality">3.2%</strong></div>
                 </div>
             </section>
 
-            <section class="card">
-                <h3>4. รายละเอียดอาการและรูปภาพ</h3>
-                <textarea id="symptomDesc" rows="3" placeholder="ระบุลักษณะผื่น อาการบวม หรืออาการทางระบบหายใจ..." oninput="updateCard()"></textarea>
-                <div class="form-group no-print" style="margin-top:10px;">
-                    <label>📸 อัพโหลดรูปภาพ:</label>
+            <section class="card section-clinical">
+                <h3>4. อาการและการวินิจฉัย (Clinical & Diagnosis)</h3>
+                
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>การวินิจฉัย (Diagnosis Type): <span style="color:red">*</span></label>
+                        <select id="diagnosisType" onchange="syncData()">
+                            <option value="">-- ระบุประเภท --</option>
+                            <option value="Maculopapular rash">Maculopapular rash (MPE)</option>
+                            <option value="Urticaria">Urticaria</option>
+                            <option value="Angioedema">Angioedema</option>
+                            <option value="SJS">Stevens-Johnson Syndrome (SJS)</option>
+                            <option value="TEN">Toxic Epidermal Necrolysis (TEN)</option>
+                            <option value="SJS-TEN overlap">SJS-TEN overlap</option>
+                            <option value="DRESS">DRESS Syndrome</option>
+                            <option value="AGEP">AGEP</option>
+                            <option value="Fixed Drug Eruption">Fixed Drug Eruption</option>
+                            <option value="Anaphylaxis">Anaphylaxis</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                         <label>Severity:</label>
+                         <select id="severityLevel" onchange="syncData()">
+                             <option value="-">-</option>
+                             <option value="Mild">Mild</option>
+                             <option value="Moderate">Moderate</option>
+                             <option value="Severe">Severe</option>
+                         </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>รายละเอียดอาการ (Description / Progress):</label>
+                    <textarea id="symptomDesc" rows="3" oninput="syncData()"></textarea>
+                </div>
+                
+                <div class="form-group no-print">
+                    <label>📸 รูปภาพประกอบ:</label>
                     <input type="file" accept="image/*" onchange="previewImage(event)">
                 </div>
-                <div id="photoPreviewContainer" style="display:none; margin-top:10px;">
-                    <img id="photoPreview" src="" style="max-width:100%; border:1px solid #ccc;">
+                <div id="photoPreviewContainer" style="display:none; margin-top:10px; text-align:center;">
+                    <img id="photoPreview" src="" style="max-height:150px; border:1px solid #000;">
                 </div>
             </section>
 
             <section class="card no-print">
-                <h3>ผู้ประเมิน (Evaluator)</h3>
+                <h3>ผู้ประเมิน</h3>
                 <div class="grid-2">
-                    <input type="text" id="pharmaName" placeholder="ชื่อ-นามสกุล เภสัชกร" oninput="updateSign(); updateCard();">
-                    <input type="text" id="pharmaPlace" placeholder="โรงพยาบาล / ร้านยา / แผนก" oninput="updateSign(); updateCard();">
+                    <input type="text" id="pharmaName" placeholder="ชื่อเภสัชกร" oninput="syncData()">
+                    <input type="text" id="pharmaPlace" placeholder="แผนก/หน่วยงาน" oninput="syncData()">
                 </div>
             </section>
 
-            <section class="card no-print" style="background-color: #ffebee; border: 1px solid #ffcdd2;">
-                <h3 style="color: #c62828;">🪪 ตัวอย่างบัตรแพ้ยา (Allergy Card Preview)</h3>
-                <p class="hint">ข้อมูลจะถูกดึงมาแสดงอัตโนมัติ กดปุ่ม "พิมพ์บัตรแพ้ยา" เพื่อพิมพ์เฉพาะส่วนนี้</p>
-                
+            <section class="card no-print" style="background:#ffebee; border:1px solid #ef9a9a;">
+                <h3 style="color:#c62828;">ตัวอย่างบัตรแพ้ยา</h3>
                 <div class="card-preview-wrapper">
                     <div id="allergyCard" class="allergy-card">
-                        <div class="ac-header">
-                            ⚠ บัตรประจำตัวผู้แพ้ยา (Drug Allergy Card)
-                        </div>
+                        <div class="ac-header">⚠ บัตรประจำตัวผู้แพ้ยา</div>
                         <div class="ac-body">
-                            <div class="ac-row">
-                                <span class="ac-label">ชื่อผู้ป่วย:</span>
-                                <span class="ac-value" id="cardPatientName">-</span>
-                            </div>
-                            <div class="ac-row">
-                                <span class="ac-label">ชื่อยาที่แพ้:</span>
-                                <span class="ac-value drug-name" id="cardDrugName">-</span>
-                            </div>
-                            <div class="ac-row">
-                                <span class="ac-label">อาการแพ้:</span>
-                                <span class="ac-value" id="cardReaction">-</span>
-                            </div>
-                            <div class="ac-row">
-                                <span class="ac-label">ผลประเมิน (Naranjo):</span>
-                                <span class="ac-value" id="cardNaranjo">-</span>
-                            </div>
+                            <div class="ac-row"><span class="ac-label">ชื่อ:</span> <span id="cardPatientName">-</span></div>
+                            <div class="ac-row"><span class="ac-label">แพ้ยา:</span> <span class="ac-value drug-name" id="cardDrugName">-</span></div>
+                            <div class="ac-row"><span class="ac-label">อาการ:</span> <span id="cardReaction">-</span></div>
+                            <div class="ac-row"><span class="ac-label">Dx:</span> <span id="cardDiagnosis" style="font-weight:bold;">-</span></div>
                         </div>
                         <div class="ac-footer">
-                            <div class="ac-evaluator">
-                                ผู้ประเมิน: <span id="cardEvaluator">-</span><br>
-                                <span id="cardPlace" style="font-size: 0.8em;">-</span>
-                            </div>
-                            <div class="ac-date">วันที่: <span id="cardDate"></span></div>
+                            <div>เภสัชกร: <span id="cardEvaluator">-</span></div>
+                            <div id="cardDateDisplay"></div>
                         </div>
                     </div>
                 </div>
             </section>
 
             <div class="actions no-print">
-                <button type="button" class="btn-print" onclick="printReport()">🖨️ พิมพ์รายงาน (A4 Report)</button>
+                <button type="button" class="btn-print" onclick="printReport()">🖨️ พิมพ์รายงาน (A4 Formal)</button>
                 <button type="button" class="btn-print-card" onclick="printCardOnly()">🖨️ พิมพ์บัตรแพ้ยา (Card Only)</button>
             </div>
 
-            <div class="print-footer">
-                <div class="sign-box">
-                    <p>ลงชื่อ .......................................................</p>
-                    <p>( <span id="printName">........................................</span> )</p>
-                    <p>เภสัชกรผู้ประเมิน</p>
-                    <p>หน่วยงาน: <span id="printPlace">......................</span></p>
-                    <p>วันที่: <span id="printDate"></span></p>
+            <div class="print-footer-formal">
+                <div class="signature-block">
+                    <div class="sign-line">ลงชื่อ ........................................................... ผู้ประเมิน</div>
+                    <div class="sign-name">( <span id="printName">........................................</span> )</div>
+                    <div class="sign-role">เภสัชกร / บุคลากรทางการแพทย์</div>
+                    <div class="sign-date">วันที่: <span id="printDate">..........................</span></div>
                 </div>
             </div>
 
